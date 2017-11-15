@@ -1,0 +1,90 @@
+public class LinkedData {
+	    public Node _head;
+
+	    public LinkedData()
+	    {
+	    _head = null;
+	    }
+
+	    public LinkedData (String text)
+	    {
+	        this._head = new Node(0);
+	        int lastIndex = 0;
+	        boolean foundSpace = false;
+	        String newString;
+	        if (text.length() == 0) {
+	            this._head.prev = null;
+	            this._head.next = null;
+	        }
+	        else {
+	        for (int i=0;i<text.length();i++)
+	        {
+	                if (text.charAt(i) == ' ') {
+	               newString = text.substring(lastIndex,i);
+	               insertNode(newString);
+	                lastIndex = i;
+	                foundSpace = true;
+	        }
+	    }
+	        if (!foundSpace) {
+	            _head.setWord(text);
+	            _head.setNext(null);
+
+	        }
+	        else {
+	            //Insert last word
+	            String lastString = text.substring(lastIndex,text.length());
+	            Node lastNode = new Node(_head._word);
+	            _head.setNext(new Node(lastString,lastNode));
+
+	        }
+
+	        sortList(_head);
+
+	    }
+	}
+
+	      private void insertNode(String newString) {
+	    	  Node newWord = new Node(_head._word);
+	    	  _head._word = newString;
+	    	  _head.setNext(newWord);
+	    }
+
+	private Node sortList(Node start) {
+	        if (start == null || start.next == null) return start;
+	        Node fast = start;
+	        Node slow = start;
+	        // get in middle of the list :
+	        while (fast.next!= null && fast.next.next !=null){
+	            slow = slow.next; fast = fast.next.next;
+	        }
+	        fast = slow.next;
+	        slow.next=null;
+	        return mergeSortedList(sortList(start),sortList(fast));
+	        }
+
+	        private Node mergeSortedList(Node firstList,Node secondList){
+	            Node returnNode = new Node("",null);
+	            Node trackingPointer = returnNode;
+	            while(firstList!=null && secondList!=null){
+	                if(firstList._word.compareTo(secondList._word) < 0){
+	                    trackingPointer.next = firstList; firstList=firstList.next;
+	                } else {
+	                    trackingPointer.next = secondList; secondList=secondList.next
+	                    ;}
+	                trackingPointer = trackingPointer.next;
+	            }
+	            if (firstList!=null) trackingPointer.next = firstList;
+	            else if (secondList!=null) trackingPointer.next = secondList;
+	            return returnNode.next;
+	            }
+
+	        public String toString() {
+	            String result = "";
+	            while(_head.getNext() != null){
+	                _head = (Node) _head.getNext();
+	                result += _head._word + ", ";
+	            }
+	            return "List: " + result;
+	        }
+}

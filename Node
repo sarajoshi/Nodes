@@ -1,0 +1,45 @@
+public class Node {
+
+    public int iData;
+    public Node next;
+    public Node prev;
+	private int weight;
+	public String _word;
+
+    public Node(int x) {
+        iData = x;
+    }
+
+    public Node(String lastString, Node lastNode) {
+		lastString = _word;
+		lastNode = prev;
+	}
+
+	public Node(String _word2) {
+		_word2 = _word;
+	}
+
+	public void displayNode() {
+        System.out.println(iData + " ");
+    }
+    public int compareTo(Node n) {
+        if(this.weight < n.weight){
+            return -1;
+        }else if(this.weight > n.weight){
+            return 1;
+        }else
+            return 0;
+    }
+
+	public void setNext(Object object) {
+		object = next;
+	}
+
+	public void setWord(String text) {
+		text = _word;
+	}
+
+	public Object getNext() {
+		return next;
+	}
+}

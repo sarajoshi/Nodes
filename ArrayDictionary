@@ -1,0 +1,371 @@
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+/**
+ * An implementation of a Dictionary using a sorted array.
+ * @author SaraJoshi
+ * @version 1.0
+ * @param <K>
+ * @param <V>
+ */
+
+public class ArrayDictionary<K, V> implements DictionaryInterface<K, V> {
+
+	private Entry<K, V>[] dictionary; // Array of unsorted entries
+
+	private int numberOfEntries;
+
+	private boolean initialized = false;
+
+	private final static int DEFAULT_CAPACITY = 25;
+
+	private static final int MAX_CAPACITY = 10000;
+
+	public ArrayDictionary() {
+
+	this(DEFAULT_CAPACITY);
+
+	}
+
+	public ArrayDictionary(int initialCapacity) {
+
+		checkCapacity(initialCapacity);
+
+		// The cast is safe because the new array contains null entries
+
+		@SuppressWarnings("unchecked")
+
+		Entry<K, V>[] tempDictionary = (Entry<K, V>[])new Entry[initialCapacity];
+
+		dictionary = tempDictionary;
+
+		numberOfEntries = 0;
+
+		initialized = true;
+
+	}
+
+	//Key and value are not null.
+
+	public V add(K key, V value) {
+
+		checkInitialization();
+
+		if ((key == null) || (value == null)){
+
+			throw new IllegalArgumentException("Cannot add null to a dictionary.");
+
+		} else {
+
+			V result = null;
+
+			int keyIndex = locateIndex(key);
+
+			if (keyIndex < numberOfEntries) {
+
+				// Key found, return and replace entry's value
+
+				result = dictionary[keyIndex].getValue(); // Get old value
+
+				dictionary[keyIndex].setValue(value); // Replace value
+
+			} else {
+				// Key not found; add new entry to dictionary
+
+				dictionary[numberOfEntries] = new Entry<>(key, value);
+				// Add at end of array
+
+				numberOfEntries++;
+
+				checkCapacity(); // Verify enough room for next add
+
+			}
+
+	return result;
+
+		}
+
+	}
+
+	public V remove(K key) {
+
+		checkInitialization();
+
+		V result = null;
+
+		int keyIndex = locateIndex(key);
+
+		if (keyIndex < numberOfEntries) {
+
+			// Key found; remove entry and return its value
+
+			result = dictionary[keyIndex].getValue();
+
+			dictionary[keyIndex] = dictionary[numberOfEntries - 1]; // Replace removed entry with last entry
+
+			dictionary[numberOfEntries - 1] = null;
+
+			numberOfEntries--;
+
+		}
+
+	return result;
+
+	}
+
+	public V getValue(K key) {
+
+		checkInitialization();
+
+		V result = null;
+
+		int keyIndex = locateIndex(key);
+
+		if (keyIndex < numberOfEntries) {
+
+			result = dictionary[keyIndex].getValue(); // Key found; return value
+
+		}
+
+		return result;
+
+	}
+
+	public boolean contains(K key) {
+
+		return getValue(key) != null;
+
+	}
+
+	public boolean isEmpty() {
+
+		return numberOfEntries == 0;
+
+	}
+
+	public int getSize() {
+
+	return numberOfEntries;
+
+	}
+
+	public final void clear() {
+
+	checkInitialization();
+	// Clear entries but retains array so no need to create a new array
+
+		for (int index = 0; index < numberOfEntries; index++) {
+
+			dictionary[index] = null;
+
+			numberOfEntries = 0;
+
+		}
+
+	}
+
+	public Iterator<K> getKeyIterator() {
+
+		return new KeyIterator();
+
+	}
+
+	public Iterator<V> getValueIterator() {
+
+		return new ValueIterator();
+
+	}
+
+	// Returns the array index of the entry that contains key, or
+
+	// returns numberOfEntries if no such entry exists.
+
+	private int locateIndex(K key) {
+
+	// Sequential search
+
+		int index = 0;
+
+		while ( (index < numberOfEntries) && !key.equals(dictionary[index].getKey())) {
+
+			index++;
+
+		}
+
+		return index;
+
+	}
+
+	// Doubles the size of the array dictionary if it is full.
+
+	private void checkCapacity() {
+
+		if (numberOfEntries >= dictionary.length) {
+
+			int newCapacity = 2 * dictionary.length;
+
+			checkCapacity(newCapacity);
+
+			dictionary = Arrays.copyOf(dictionary, newCapacity);
+
+		}
+
+	}
+
+	// Throws an exception if this object is not initialized.
+
+	private void checkInitialization() {
+
+		if (!initialized) {
+
+			throw new SecurityException ("ArrayDictionary object is not initialized properly.");
+		}
+
+	}
+
+	// Verifies that capacity is not too small or too large.
+
+	private void checkCapacity(int capacity) {
+
+		if (capacity < DEFAULT_CAPACITY) {
+
+			capacity = DEFAULT_CAPACITY;
+
+		} else if (capacity > MAX_CAPACITY) {
+
+			throw new IllegalStateException("Attempt to create a dictionary " +
+
+			"whose capacity is larger than " +
+
+			MAX_CAPACITY);
+		}
+
+	}
+
+private class KeyIterator implements Iterator<K> {
+
+	private int currentIndex;
+
+	private KeyIterator() {
+
+		currentIndex = 0;
+
+}
+
+	public boolean hasNext() {
+
+		return currentIndex < numberOfEntries;
+
+	}
+
+	public K next() {
+
+		K result = null;
+
+		if (hasNext()) {
+
+			Entry<K,V> currentEntry = dictionary[currentIndex];
+
+			result = currentEntry.getKey();
+
+			currentIndex++;
+
+		} else {
+
+			throw new NoSuchElementException();
+
+		}
+
+	return result;
+
+	}
+
+	public void remove() {
+
+		throw new UnsupportedOperationException();
+
+	}
+
+}
+//Value Iterator class
+private class ValueIterator implements Iterator<V> {
+
+	private int currentIndex;
+
+	private ValueIterator() {
+
+	currentIndex = 0;
+
+	}
+
+	public boolean hasNext() {
+
+		return currentIndex < numberOfEntries;
+
+	}
+
+	public V next() {
+
+		V result = null;
+
+		if (hasNext()) {
+
+			Entry<K,V> currentEntry = dictionary[currentIndex];
+
+			result = currentEntry.getValue();
+
+			currentIndex++;
+
+		} else {
+
+			throw new NoSuchElementException();
+
+		}
+
+		return result;
+
+	}
+
+	public void remove() {
+
+		throw new UnsupportedOperationException();
+
+	}
+
+}
+//Entry Class
+	private class Entry<S, T> {
+
+	private S key;
+
+	private T value;
+
+	private Entry(S searchKey, T dataValue) {
+
+		key = searchKey;
+
+		value = dataValue;
+
+	}
+
+	private S getKey() {
+
+		return key;
+
+	}
+
+	private T getValue() {
+
+		return value;
+
+	}
+
+	private void setValue(T dataValue){
+
+		value = dataValue;
+
+	}
+
+	}
+
+}

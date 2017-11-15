@@ -1,0 +1,13 @@
+public class DLNode<T> {
+
+	public T previous;
+	public T next;
+	public T newEntry;
+
+	@SuppressWarnings({ "unused", "rawtypes" })
+	public DLNode() {
+		DLNode head = null;
+		DLNode tail = null;
+	}
+
+}
